@@ -50,7 +50,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // Ensure all /api routes are GET-only (read-only)
-// If you add POST/PUT/DELETE routes in the future, review access controls
+
 app.post('*', (req, res, next) => {
   if (req.path.startsWith('/api/')) {
     return res.status(403).json({ error: 'Write operations not allowed' });
@@ -97,12 +97,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-// IMPORTANT: For production security with 0.0.0.0/0 Atlas access:
-// 1. In MongoDB Atlas, create a dedicated read-only user for this app
-// 2. Grant it 'readWrite' role on only the app database (not admin/system DBs)
-// 3. Use this user in MONGODB_URI config var
-// 4. Never use admin credentials in production
-// 5. Example: mongodb+srv://app_user:PASSWORD@cluster.mongodb.net/plant_db?retryWrites=true&w=majority
+
 
 const PORT = process.env.PORT || 5000;
 
