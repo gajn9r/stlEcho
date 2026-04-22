@@ -1,13 +1,26 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
+const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const app = express();
 
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Middleware: size limits and JSON parsing
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+
+// Rate limiting for API endpoints
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Apply rate limiting to all /api/* routes
+app.use('/api/', apiLimiter);
 
 // MongoDB Connection
 const mongoURI = process.env.MONGODB_URI;
@@ -31,9 +44,32 @@ app.use('/api/morphology', require('./routes/morphologyRoutes'));
 app.use('/api/environmental', require('./routes/environmentalRoutes'));
 app.use('/api/research', require('./routes/researchRoutes'));
 
-// Health check endpoint
+// Health check endpoint (read-only, no state changes)
 app.get('/api/health', (req, res) => {
   res.json({ status: 'Server is running' });
+});
+
+// Ensure all /api routes are GET-only (read-only)
+// If you add POST/PUT/DELETE routes in the future, review access controls
+app.post('*', (req, res, next) => {
+  if (req.path.startsWith('/api/')) {
+    return res.status(403).json({ error: 'Write operations not allowed' });
+  }
+  next();
+});
+
+app.put('*', (req, res, next) => {
+  if (req.path.startsWith('/api/')) {
+    return res.status(403).json({ error: 'Write operations not allowed' });
+  }
+  next();
+});
+
+app.delete('*', (req, res, next) => {
+  if (req.path.startsWith('/api/')) {
+    return res.status(403).json({ error: 'Write operations not allowed' });
+  }
+  next();
 });
 
 if (process.env.NODE_ENV === 'production') {
@@ -55,8 +91,18 @@ if (process.env.NODE_ENV === 'production') {
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ error: 'Something went wrong!' });
+  const status = err.status || err.statusCode || 500;
+  res.status(status).json({ 
+    error: status === 404 ? 'Not found' : 'Something went wrong!' 
+  });
 });
+
+// IMPORTANT: For production security with 0.0.0.0/0 Atlas access:
+// 1. In MongoDB Atlas, create a dedicated read-only user for this app
+// 2. Grant it 'readWrite' role on only the app database (not admin/system DBs)
+// 3. Use this user in MONGODB_URI config var
+// 4. Never use admin credentials in production
+// 5. Example: mongodb+srv://app_user:PASSWORD@cluster.mongodb.net/plant_db?retryWrites=true&w=majority
 
 const PORT = process.env.PORT || 5000;
 
