@@ -1,0 +1,13 @@
+{
+  "name": "stl-echo",
+  "description": "STL Echo full-stack app (Angular + Express + MongoDB Atlas)",
+  "stack": "heroku-22",
+  "env": {
+    "NODE_ENV": {
+      "value": "production"
+    },
+    "MONGODB_URI": {
+      "description": "MongoDB Atlas connection string"
+    }
+  }
+}

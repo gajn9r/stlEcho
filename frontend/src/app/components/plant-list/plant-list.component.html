@@ -1,0 +1,167 @@
+<div class="plant-list-container">
+  <div class="search-section">
+    <h2>Search Native Plants</h2>
+    
+    <div class="search-box">
+      <input 
+        type="text" 
+        [(ngModel)]="searchQuery"
+        (change)="onFilterChange()"
+        placeholder="Search by name..."
+        class="search-input"
+      />
+      <button (click)="onSearch()" class="btn btn-primary">Search</button>
+      <button (click)="resetFilters()" class="btn btn-secondary">Reset</button>
+    </div>
+
+    <div class="filters">
+      <div class="filter-group">
+        <label>Plant Type:</label>
+        <select [(ngModel)]="selectedPlantType" (change)="onFilterChange()" class="filter-select">
+          <option value="">All Types</option>
+          <option *ngFor="let type of plantTypes" [value]="type">{{ type }}</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Soil Type:</label>
+        <select [(ngModel)]="selectedSoilType" (change)="onFilterChange()" class="filter-select">
+          <option value="">All Soil Types</option>
+          <option *ngFor="let soil of soilTypes" [value]="soil">{{ soil }}</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Light:</label>
+        <select [(ngModel)]="selectedLight" (change)="onFilterChange()" class="filter-select">
+          <option value="">All Light Levels</option>
+          <option value="full_sun">Full Sun</option>
+          <option value="part_shade">Part Shade</option>
+          <option value="full_shade">Full Shade</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Family:</label>
+        <select [(ngModel)]="selectedFamily" (change)="onFilterChange()" class="filter-select">
+          <option value="">All Families</option>
+          <option *ngFor="let fam of families" [value]="fam">{{ fam }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div *ngIf="searchQuery || selectedPlantType || selectedSoilType || selectedLight || selectedFamily || selectedPollinator" class="active-filters">
+      <p><strong>Active Filters:</strong></p>
+      <div class="filter-display">
+        <span *ngIf="searchQuery" class="filter-badge">Search: {{ searchQuery }} <button (click)="removeSearchFilter()" class="filter-remove">×</button></span>
+        <span *ngIf="selectedPlantType" class="filter-badge">Type: {{ selectedPlantType }} <button (click)="removeTypeFilter()" class="filter-remove">×</button></span>
+        <span *ngIf="selectedSoilType" class="filter-badge">Soil: {{ selectedSoilType }} <button (click)="removeSoilFilter()" class="filter-remove">×</button></span>
+        <span *ngIf="selectedLight" class="filter-badge">Light: {{ selectedLight }} <button (click)="removeLightFilter()" class="filter-remove">×</button></span>
+        <span *ngIf="selectedFamily" class="filter-badge">Family: {{ selectedFamily }} <button (click)="removeFamilyFilter()" class="filter-remove">×</button></span>
+        <span *ngIf="selectedPollinator" class="filter-badge">Pollinator: {{ selectedPollinator }} <button (click)="removePollinatorFilter()" class="filter-remove">×</button></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="pollinators-section">
+    <h3>Filter By Pollinator</h3>
+
+    <div *ngIf="pollinatorsLoading" class="loading">
+      Loading pollinators...
+    </div>
+
+    <div *ngIf="pollinatorsError" class="error-message">
+      {{ pollinatorsError }}
+    </div>
+
+    <div *ngIf="!pollinatorsLoading && pollinators.length > 0" class="pollinators-grid">
+      <div *ngFor="let pollinator of pollinators"
+           class="pollinator-card"
+           [class.selected]="selectedPollinator === pollinator.name"
+           (click)="selectPollinator(pollinator.name)">
+        <div class="icon">
+          {{ getPollinatorIcon(pollinator.name) }}
+        </div>
+        <h4>{{ pollinator.name | titlecase }}</h4>
+        <p class="count">{{ pollinator.plant_count }} plants</p>
+        <p class="description">{{ getDescription(pollinator.name) }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    Loading plants...
+  </div>
+
+  <div *ngIf="!loading && filteredPlants.length > 0" class="plants-grid">
+    <h3>Results: {{ filteredPlants.length }} plants found</h3>
+    
+    <div class="plant-card-container">
+      <div *ngFor="let plant of filteredPlants" class="plant-card">
+        <div class="plant-header">
+          <h4>{{ plant.common_name }}</h4>
+          <p class="botanical-name">Genus: {{ plant.botanical_name }}</p>
+        </div>
+
+        <div class="plant-details">
+          <div class="detail-row">
+            <span class="label">Type:</span>
+            <span>{{ plant.plant_type }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Bloom Time:</span>
+            <span>{{ plant.bloom_time }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Height:</span>
+            <span>{{ plant.height }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Soil Type:</span>
+            <span>{{ plant.soil_type }}</span>
+          </div>
+          
+          <div *ngIf="plant.pollinators && plant.pollinators.length > 0" class="detail-row">
+            <span class="label">Pollinators:</span>
+            <span>{{ getPollinatorNames(plant) }}</span>
+          </div>
+        </div>
+
+        <div class="plant-footer">
+          <button class="btn btn-small" (click)="openPlantModal(plant)">Read More</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && filteredPlants.length === 0" class="no-results">
+    <p>No plants found matching your search criteria.</p>
+  </div>
+
+  <div *ngIf="isPlantModalOpen && selectedPlant" class="modal-backdrop" (click)="closePlantModal()">
+    <div class="plant-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ selectedPlant.common_name }}</h3>
+        <button class="modal-close" (click)="closePlantModal()" aria-label="Close">&times;</button>
+      </div>
+
+      <p class="modal-botanical-name"><em>{{ selectedPlant.botanical_name }}</em></p>
+
+      <div class="modal-section" *ngIf="selectedPlant.description">
+        <h4>Description</h4>
+        <p>{{ selectedPlant.description }}</p>
+      </div>
+
+      <div class="modal-section" *ngIf="selectedPlant.pollinators && selectedPlant.pollinators.length > 0">
+        <h4>Specific Taxonomic Pollinators</h4>
+        <ul>
+          <li *ngFor="let detail of getTaxonomicPollinatorDetails(selectedPlant)">{{ detail }}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,164 @@
+<div class="plant-detail-container" *ngIf="plant">
+  <div class="plant-header">
+    <h1>{{ plant.common_name }}</h1>
+    <p class="botanical-name"><em>{{ plant.botanical_name }}</em></p>
+    <p class="plant-type">{{ plant.plant_type }}</p>
+  </div>
+
+  <div *ngIf="plant.image" class="plant-image">
+    <img [src]="plant.image" [alt]="plant.common_name" />
+  </div>
+
+  <div class="plant-content">
+    <!-- Basic Information -->
+    <section class="info-section">
+      <h2>Basic Information</h2>
+      <div *ngIf="plant.description" class="description">
+        {{ plant.description }}
+      </div>
+      <div class="info-grid">
+        <div class="info-item">
+          <strong>Family:</strong>
+          <span>{{ plant.family }}</span>
+        </div>
+        <div class="info-item">
+          <strong>Height:</strong>
+          <span>{{ plant.height }}</span>
+        </div>
+        <div class="info-item">
+          <strong>Bloom Time:</strong>
+          <span>{{ plant.bloom_time }}</span>
+        </div>
+        <div class="info-item">
+          <strong>Soil Type:</strong>
+          <span>{{ plant.soil_type }}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Growing Conditions -->
+    <section class="info-section">
+      <h2>Growing Conditions</h2>
+      <div class="info-item">
+        <strong>Light Requirements:</strong>
+        <div class="tags">
+          <span *ngFor="let light of lightRequirements" class="tag">{{ light }}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Garden Uses -->
+    <section class="info-section" *ngIf="gardenUses.length > 0">
+      <h2>Garden Applications</h2>
+      <div class="tags">
+        <span *ngFor="let use of gardenUses" class="tag tag-garden">{{ use }}</span>
+      </div>
+    </section>
+
+    <!-- Pollinators -->
+    <section class="info-section" *ngIf="plant.pollinators && plant.pollinators.length > 0">
+      <h2>Pollinators</h2>
+      <div class="tags">
+        <span *ngFor="let pollinator of plant.pollinators" class="tag tag-pollinator">
+          {{ pollinator.common_name }} ({{ pollinator.scientific_order }})
+        </span>
+      </div>
+    </section>
+
+    <!-- Morphological Traits -->
+    <section class="info-section" *ngIf="plant.morphological_traits">
+      <h2>Physical Characteristics</h2>
+      <div *ngIf="plant.morphological_traits.flower_color && plant.morphological_traits.flower_color.length > 0">
+        <strong>Flower Colors:</strong>
+        <div class="tags">
+          <span *ngFor="let color of plant.morphological_traits.flower_color" class="tag">
+            {{ color }}
+          </span>
+        </div>
+      </div>
+      <div *ngIf="plant.morphological_traits.leaf_type">
+        <strong>Leaf Type:</strong> {{ plant.morphological_traits.leaf_type }}
+      </div>
+      <div *ngIf="plant.morphological_traits.growth_habit">
+        <strong>Growth Habit:</strong> {{ plant.morphological_traits.growth_habit }}
+      </div>
+      <div *ngIf="plant.morphological_traits.root_system">
+        <strong>Root System:</strong> {{ plant.morphological_traits.root_system }}
+      </div>
+    </section>
+
+    <!-- Environmental Impact -->
+    <section class="info-section" *ngIf="plant.environmental_impact">
+      <h2>Environmental Impact</h2>
+      <div class="info-grid">
+        <div *ngIf="plant.environmental_impact.native_range" class="info-item">
+          <strong>Native Range:</strong>
+          <span>{{ plant.environmental_impact.native_range }}</span>
+        </div>
+        <div *ngIf="plant.environmental_impact.conservation_status" class="info-item">
+          <strong>Conservation Status:</strong>
+          <span>{{ plant.environmental_impact.conservation_status }}</span>
+        </div>
+        <div *ngIf="plant.environmental_impact.ecological_importance" class="info-item">
+          <strong>Ecological Importance:</strong>
+          <span>{{ plant.environmental_impact.ecological_importance }}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Research Data -->
+    <section class="info-section" *ngIf="plant.medicinal_properties || plant.ethnobotanical_uses || plant.source_research">
+      <h2>Research & Uses</h2>
+      
+      <div *ngIf="plant.medicinal_properties && plant.medicinal_properties.length > 0">
+        <strong>Medicinal Properties:</strong>
+        <ul>
+          <li *ngFor="let property of plant.medicinal_properties">{{ property }}</li>
+        </ul>
+      </div>
+
+      <div *ngIf="plant.ethnobotanical_uses && plant.ethnobotanical_uses.length > 0">
+        <strong>Ethnobotanical Uses:</strong>
+        <ul>
+          <li *ngFor="let use of plant.ethnobotanical_uses">{{ use }}</li>
+        </ul>
+      </div>
+
+      <div *ngIf="plant.source_research && plant.source_research.length > 0">
+        <strong>Research Sources:</strong>
+        <ul>
+          <li *ngFor="let source of plant.source_research">
+            <a [href]="source.url" target="_blank">{{ source.title }}</a>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Similar Plants -->
+    <section class="info-section" *ngIf="similarPlants.length > 0">
+      <h2>Morphologically Similar Plants</h2>
+      <div class="similar-plants">
+        <div *ngFor="let plant of similarPlants" class="similar-plant">
+          <h4>{{ plant.common_name }}</h4>
+          <p><em>{{ plant.botanical_name }}</em></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- External Links -->
+    <section class="info-section" *ngIf="plant.url">
+      <h2>Learn More</h2>
+      <a [href]="plant.url" target="_blank" class="btn btn-primary">
+        View on Missouri Botanical Garden
+      </a>
+    </section>
+  </div>
+</div>
+
+<div *ngIf="error" class="error-message">
+  {{ error }}
+</div>
+
+<div *ngIf="loading" class="loading">
+  Loading plant details...
+</div>

@@ -1,0 +1,16 @@
+{
+  "name": "stl-echo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Heroku deployment wrapper for STL Echo frontend + API",
+  "engines": {
+    "node": "20.x",
+    "npm": "10.x"
+  },
+  "scripts": {
+    "heroku-postbuild": "npm --prefix server install && npm --prefix frontend install && npm --prefix frontend run build",
+    "start": "npm --prefix server start",
+    "dev:server": "npm --prefix server run dev",
+    "dev:frontend": "npm --prefix frontend start"
+  }
+}

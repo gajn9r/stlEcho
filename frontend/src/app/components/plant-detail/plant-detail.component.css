@@ -1,0 +1,182 @@
+.plant-detail-container {
+  max-width: 900px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.plant-header {
+  background: linear-gradient(135deg, #2d5016 0%, #3d7023 100%);
+  color: white;
+  padding: 40px 30px;
+  text-align: center;
+}
+
+.plant-header h1 {
+  margin: 0 0 10px 0;
+  font-size: 32px;
+  color: white;
+}
+
+.botanical-name {
+  font-size: 16px;
+  opacity: 0.9;
+  margin: 10px 0;
+}
+
+.plant-type {
+  font-size: 14px;
+  opacity: 0.8;
+  background: rgba(255,255,255,0.2);
+  padding: 5px 15px;
+  border-radius: 20px;
+  display: inline-block;
+  margin-top: 10px;
+}
+
+.plant-image {
+  text-align: center;
+  padding: 20px;
+  background: #f9f9f9;
+}
+
+.plant-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  max-height: 400px;
+}
+
+.plant-content {
+  padding: 30px;
+}
+
+.info-section {
+  margin-bottom: 30px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid #eee;
+}
+
+.info-section:last-child {
+  border-bottom: none;
+}
+
+.info-section h2 {
+  font-size: 20px;
+  color: #2d5016;
+  margin-bottom: 15px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.info-item {
+  padding: 10px 0;
+}
+
+.info-item strong {
+  color: #333;
+  font-weight: 600;
+}
+
+.description {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #555;
+  margin-bottom: 15px;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.tag {
+  display: inline-block;
+  background-color: #e8f5e9;
+  color: #2d5016;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.tag-garden {
+  background-color: #fff3e0;
+  color: #e65100;
+}
+
+.tag-pollinator {
+  background-color: #f3e5f5;
+  color: #6a1b9a;
+}
+
+.similar-plants {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.similar-plant {
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 6px;
+  border: 1px solid #eee;
+}
+
+.similar-plant h4 {
+  margin: 0 0 5px 0;
+  font-size: 14px;
+  color: #2d5016;
+}
+
+.similar-plant p {
+  margin: 0;
+  font-size: 12px;
+  color: #666;
+}
+
+.error-message {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  border-left: 4px solid #c62828;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .plant-header {
+    padding: 30px 20px;
+  }
+
+  .plant-header h1 {
+    font-size: 24px;
+  }
+
+  .plant-content {
+    padding: 20px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .similar-plants {
+    grid-template-columns: 1fr;
+  }
+}
